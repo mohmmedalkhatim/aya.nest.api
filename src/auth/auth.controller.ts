@@ -35,6 +35,6 @@ export class AuthController {
   @Post('login')
   @UsePipes(new ZodValidationPipe(zod.SignInUserSchame))
   async sign_in (@Body() data: zod.SignInUserDto) {
-    return this.authService.signIn({ ...data })
+    return this.authService.signIn(data)
   }
 }
