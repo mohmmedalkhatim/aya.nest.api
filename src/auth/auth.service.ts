@@ -23,15 +23,19 @@ export class AuthService {
         email,
       },
     })
-    let pass = crypt.compare(password, user.password)
-    if (!pass) {
-      throw new UnauthorizedException()
-    }
-    const payload = { sub: user.id, email: user.email }
-    return {
-      // 💡 Here the JWT secret key that's used for signing the payload
-      // is the key that was passsed in the JwtModule
-      access_token: await this.jwtService.signAsync(payload),
+    if (user) {
+      let pass = crypt.compare(password, user.password)
+      if (!pass) {
+        throw new UnauthorizedException()
+      }
+      const payload = { sub: user.id, email: user.email }
+      return {
+        // 💡 Here the JWT secret key that's used for signing the payload
+        // is the key that was passsed in the JwtModule
+        access_token: await this.jwtService.signAsync(payload),
+      }
+    }else{
+      throw new HttpException("conldn't find the user",HttpStatus.NOT_FOUND)
     }
   }
 
@@ -40,6 +44,7 @@ export class AuthService {
     try {
       const User = await this.prisma.user.create({
         data: {
+    
           email: user.email,
           password: crypt.hashSync(user.password, salt),
         },
