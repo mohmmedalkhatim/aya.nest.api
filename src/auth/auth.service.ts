@@ -9,6 +9,7 @@ import crypt from 'bcrypt'
 import PrismaService from '../prisma/prisma.service'
 import { CreateUserDto, SignInUserDto } from '../zod'
 import 'dotenv/config'
+import id from 'zod/v4/locales/id.js'
 
 @Injectable()
 export class AuthService {
@@ -34,8 +35,8 @@ export class AuthService {
         // is the key that was passsed in the JwtModule
         access_token: await this.jwtService.signAsync(payload),
       }
-    }else{
-      throw new HttpException("conldn't find the user",HttpStatus.NOT_FOUND)
+    } else {
+      throw new HttpException("conldn't find the user", HttpStatus.NOT_FOUND)
     }
   }
 
@@ -44,7 +45,6 @@ export class AuthService {
     try {
       const User = await this.prisma.user.create({
         data: {
-    
           email: user.email,
           password: crypt.hashSync(user.password, salt),
         },
@@ -58,5 +58,12 @@ export class AuthService {
     } catch (err) {
       throw new HttpException(err, HttpStatus.SERVICE_UNAVAILABLE)
     }
+  }
+  async delete_account (id: number) {
+    this.prisma.user.delete({
+      where: {
+        id,
+      },
+    })
   }
 }
