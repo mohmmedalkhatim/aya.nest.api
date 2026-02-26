@@ -3,7 +3,6 @@ import { z } from 'zod';
 
 export const CreateUserSchame = z
   .object({
-    id: z.number().optional(),
     name: z.string(),
     email: z.email(),
     password: z.string(),

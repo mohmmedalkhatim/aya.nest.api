@@ -25,7 +25,7 @@ export class AuthService {
       },
     })
     if (user) {
-      let pass = crypt.compare(password, user.password)
+      let pass = await crypt.compare(password, user.password)
       if (!pass) {
         throw new UnauthorizedException()
       }
@@ -41,15 +41,17 @@ export class AuthService {
   }
 
   async registor (user: CreateUserDto): Promise<{ access_token: string }> {
-    let salt = await crypt.genSalt(crypt.getRounds(user.email))
+    let salt = await crypt.genSalt(4)
     try {
+      console.log(user)
       const User = await this.prisma.user.create({
         data: {
           email: user.email,
+          name: user.name,
           password: crypt.hashSync(user.password, salt),
         },
       })
-      const payload = { sub: user.id, email: user.email }
+      const payload = { sub: user.name, email: user.email }
       return {
         // 💡 Here the JWT secret key that's used for signing the payload
         // is the key that was passsed in the JwtModule
